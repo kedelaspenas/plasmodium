@@ -3,7 +3,7 @@ from os.path import join, isfile
 import cv2, numpy as np
 
 inputfolder = 'data3'
-outputfolder = 'out'
+outputfolder = 'border'
 outstats = open("stats.out", "w")
 
 def list_files(foldername):
@@ -54,17 +54,9 @@ def process_image(path):
 		startx = x if x + w < cols else cols - dd - 1
 		starty = y if y + h < rows else rows - dd - 1
 
-		if area >= 5000:
-			# draw image
-			cv2.imwrite(join(outputfolder, f + '-' + str(idx) + '.jpg'), img[starty:starty+dd,startx:startx+dd,:])
-
-			for z in range(15,360,15):
-				M = cv2.getRotationMatrix2D((startx + dd/2, starty + dd/2),z,1)
-				rot = cv2.warpAffine(img,M,(cols, rows))
-				cv2.imwrite(join(outputfolder, f + '-' + str(idx) + '-' + str(z) + '.jpg'), rot[starty:starty+dd,startx:startx+dd,:])
-		#cv2.rectangle(imgc, (startx, starty), (startx+dd, starty+dd), (255,0,0),5)
-		#cv2.imwrite(join(outputfolder, f + '-b-' + str(idx) + '.jpg'), imgc)
-		#cv2.imwrite(join(outputfolder, f + '-' + str(idx) + '.jpg'), img[starty:starty+dd,startx:startx+dd,:])
+		if area >= 500: #if area >= 5000:
+			cv2.rectangle(imgc, (startx, starty), (startx+dd, starty+dd), (255,0,0),5)
+			cv2.imwrite(join(outputfolder, f + '-' + str(idx) + '.jpg'), imgc)
 		idx = idx + 1
 
 
@@ -81,8 +73,9 @@ except:
 	print "cannot create folder"
 
 se = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (19,19))
-print se
+
 for f in files:
+	print f
 	path = join(inputfolder, f)
 	process_image(path)
 
